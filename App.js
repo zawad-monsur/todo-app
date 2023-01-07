@@ -1,13 +1,27 @@
 import React from 'react'
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 import colors from './src/constants/Colors'
 import tempData from './tempData'
+import TodoList from './src/components/TodoList'
+import AddListModal from './src/components/AddListModal'
 
 export default class App extends React.Component {
+    state = {
+        addTodoVisible: true
+    }
+
+    toggleAddTodoModal() {
+        this.setState({ addTodoVisible: !this.state.addTodoVisible })
+    }
+
     render() {
         return (
             <View style={styles.container}>
+                <Modal animationType='slide' visible={this.state.addTodoVisible} onRequestClose={() => this.toggleAddTodoModal()}>
+                    <AddListModal closeModal={() => this.toggleAddTodoModal()} />
+                </Modal>
+
                 <View style={{ flexDirection: 'row' }}>
                     <View style={styles.divider} />
                     <Text style={styles.title}>
@@ -17,7 +31,7 @@ export default class App extends React.Component {
                 </View>
 
                 <View style={{ marginVertical: 48 }}>
-                    <TouchableOpacity style={styles.addlist}>
+                    <TouchableOpacity style={styles.addlist} onPress={() => this.toggleAddTodoModal()}>
                         <AntDesign name='plus' size={16} color={colors.blue}></AntDesign>
                     </TouchableOpacity>
 
@@ -25,17 +39,7 @@ export default class App extends React.Component {
                 </View>
 
                 <View style={{ height: 275, paddingLeft: 32 }}>
-                    <FlatList
-                        data={tempData}
-                        keyExtractor={item => item.name}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <View>
-                                <Text>{item.name} </Text>
-                            </View>
-                        )}
-                    />
+                    <FlatList data={tempData} keyExtractor={item => item.name} horizontal={true} showsHorizontalScrollIndicator={false} renderItem={({ item }) => <TodoList list={item} />} />
                 </View>
 
                 <View></View>
