@@ -2,8 +2,35 @@ import { Text, StyleSheet, View, KeyboardAvoidingView, TouchableOpacity, TextInp
 import { AntDesign } from '@expo/vector-icons'
 import React, { Component } from 'react'
 import Colors from '../constants/Colors'
+import tempData from '../../tempData'
 
 export default class AddListModal extends Component {
+    backgroundColors = ['#5cd859', '#24a6d9', '#802209', '#d88559']
+
+    state = {
+        name: '',
+        color: this.backgroundColors[0]
+    }
+
+    createTodo = () => {
+        const { name, color } = this.state
+
+        tempData.push({
+            name,
+            color,
+            todos: []
+        })
+
+        this.setState({ name: '' })
+        this.props.closeModal()
+    }
+
+    renderColors() {
+        return this.backgroundColors.map(color => {
+            return <TouchableOpacity key={color} style={[styles.colorSelect, { backgroundColor: color }]} onPress={() => this.setState({ color })} />
+        })
+    }
+
     render() {
         return (
             <KeyboardAvoidingView style={styles.container} behavior='padding'>
@@ -13,9 +40,12 @@ export default class AddListModal extends Component {
 
                 <View style={{ alignSelf: 'stretch', marginHorizontal: 32 }}>
                     <Text style={styles.title}>Create Todo List</Text>
-                    <TextInput style={styles.input} placeholder='List name'></TextInput>
 
-                    <TouchableOpacity style={[styles.create, { backgroundColor: Colors.lightblue }]}>
+                    <TextInput style={styles.input} placeholder='List name' onChangeText={text => this.setState({ name: text })}></TextInput>
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 12 }}>{this.renderColors()}</View>
+
+                    <TouchableOpacity style={[styles.create, { backgroundColor: this.state.color }]} onPress={this.createTodo}>
                         <Text style={{ color: Colors.white, fontWeight: '600' }}>Create</Text>
                     </TouchableOpacity>
                 </View>
@@ -51,5 +81,10 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    colorSelect: {
+        width: 30,
+        height: 30,
+        borderRadius: 4
     }
 })
